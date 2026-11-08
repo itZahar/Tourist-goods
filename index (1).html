@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F3F5F2">
+<meta name="description" content="Туристичне спорядження: наявність і ціни">
+<title>Туристичне спорядження</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 8 6 54h52z' fill='%231F6B4F'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#F3F5F2;--surface:#fff;--ink:#17211C;--muted:#5B6860;--line:#DCE3DD;--accent:#1F6B4F;--warn:#9A5B00;--sold:#7A857F;--ph:#E6ECE7;color-scheme:light}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Onest,system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 16px 56px}
+header{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:26px}
+h1{margin:0;font-size:clamp(28px,6vw,46px);line-height:1.08;letter-spacing:-.02em;font-weight:700}
+header p{margin:8px 0 0;color:var(--muted);max-width:46ch}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;border:1px solid var(--accent);cursor:pointer;font:inherit;font-weight:500}
+.btn:hover{background:#185640}
+.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.ghost:hover{background:#EEF2EF}
+:focus-visible{outline:3px solid #2B8A66;outline-offset:2px}
+#state{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr);gap:18px}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
+a.card{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;color:inherit;text-decoration:none}
+a.card:hover{border-color:#B9C6BD}
+.pic{aspect-ratio:4/3;background:var(--ph)}
+.pic img{width:100%;height:100%;object-fit:cover;display:block}
+.info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.nm{font-weight:500;font-size:15px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pr{font-weight:700;font-size:18px;margin-top:auto;padding-top:4px}
+.st{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.st:before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.st.res:before{background:var(--warn)}
+.st.sold:before{background:var(--sold)}
+.sold .pic{opacity:.5}
+.sold .pr{color:var(--sold)}
+.ph{display:grid;place-items:center;width:100%;height:100%;padding:8px;text-align:center;color:var(--muted);font-size:14px}
+.ph a{color:var(--accent)}
+dialog{border:0;padding:0;width:min(760px,100%);max-height:100dvh;background:var(--surface);color:var(--ink);border-radius:12px;overflow:auto}
+dialog::backdrop{background:rgba(23,33,28,.55)}
+@media(max-width:700px){dialog{width:100%;height:100dvh;max-height:none;border-radius:0}}
+#box{position:relative}
+.x{position:absolute;top:10px;right:10px;z-index:3;width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.92);font-size:24px;line-height:1;cursor:pointer}
+.main{position:relative;aspect-ratio:4/3;background:var(--ph)}
+.main img{width:100%;height:100%;object-fit:contain;display:block}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:50%;background:rgba(255,255,255,.92);font-size:22px;cursor:pointer}
+.prev{left:8px}.next{right:8px}
+.th{display:flex;gap:8px;padding:10px 16px 0;overflow-x:auto}
+.th button{flex:none;width:64px;height:48px;padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;background:var(--ph);cursor:pointer}
+.th button[aria-current=true]{border-color:var(--accent)}
+.th img{width:100%;height:100%;object-fit:cover;display:block}
+.body{padding:16px 18px 24px}
+h2{margin:0 0 4px;font-size:22px;line-height:1.25;font-weight:700}
+.dpr{font-size:26px;font-weight:700;margin-bottom:6px}
+.desc{margin-top:14px}
+.desc p{margin:0 0 .8em;max-width:68ch}
+.desc ul{margin:0 0 .8em;padding-left:1.2em}
+.desc li{margin-bottom:.2em}
+.desc a{color:var(--accent)}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Туристичне спорядження</h1>
+      <p>Наявність і ціни. Щоб домовитись, пишіть у Telegram.</p>
+    </div>
+    <a class="btn" id="tg" target="_blank" rel="noopener">Написати в Telegram</a>
+  </header>
+  <main>
+    <p id="state">Завантажую товари…</p>
+    <div class="grid" id="grid"></div>
+  </main>
+</div>
+<dialog id="dlg" aria-label="Товар"><div id="box"></div></dialog>
+<script>
+const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vRCUOcHg5CCXK4qgfMlbOqLUKNELy4f3t9hCJugYhsaXkAE5ffo3pSLZruMNQwURvcEBuBcA8nsv_n3/pub?gid=0&single=true&output=csv";
+const TG="https://t.me/GatsZa";
+const $=s=>document.querySelector(s);
+const grid=$("#grid"),dlg=$("#dlg"),box=$("#box"),state=$("#state");
+$("#tg").href=TG;
+let items=[],cur=null;
+
+const h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function parse(t){const r=[];let row=[],f="",q=false;
+  for(let i=0;i<t.length;i++){const c=t[i];
+    if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c=='"')q=true;
+    else if(c==","){row.push(f);f=""}
+    else if(c=="\n"){row.push(f);r.push(row);row=[];f=""}
+    else if(c!="\r")f+=c}
+  if(f||row.length){row.push(f);r.push(row)}
+  return r}
+
+/* Supports both layouts: products in rows (fields in the first row) or products in columns (fields in the first column) */
+function toItems(rows){
+  const low=s=>(s||"").trim().toLowerCase();let t;
+  if(rows[0]&&rows[0].map(low).includes("price")){
+    const k=rows[0].map(low);
+    t=rows.slice(1).map(r=>Object.fromEntries(k.map((x,i)=>[x,r[i]||""])));
+  }else{
+    const k=rows.map(r=>low(r[0])),n=Math.max(0,...rows.map(r=>r.length))-1;
+    t=Array.from({length:n},(_,j)=>Object.fromEntries(rows.map((r,i)=>[k[i],r[j+1]||""])));
+  }
+  return t.filter(o=>(o.name||"").trim())}
+
+function price(s){s=(s||"").trim();const m=s.match(/^(\d[\d\s]*)\s*(грн\.?|₴)?$/i);
+  return m?(+m[1].replace(/\s/g,"")).toLocaleString("uk-UA")+" грн":s}
+
+function status(s){s=(s||"").trim();const l=s.toLowerCase();
+  if(!s)return null;
+  if(/^(продан|нема)/.test(l))return["sold","Продано"];
+  if(l.startsWith("резерв"))return["res","Резерв"];
+  if(l.startsWith("є")){const r=s.slice(1).trim();return["in",r?"Є, "+r:"Є в наявності"]}
+  return["in",s]}
+
+function photos(s){
+  return(s||"").split(/[\s,]+/).filter(Boolean).map(t=>{
+    const m=t.match(/\/d\/([\w-]{15,})/)||t.match(/[?&]id=([\w-]{15,})/);
+    if(m)return{src:"https://drive.google.com/thumbnail?id="+m[1]+"&sz=w1000",alt:"https://lh3.googleusercontent.com/d/"+m[1]+"=w1000",open:"https://drive.google.com/file/d/"+m[1]+"/view"};
+    if(/^https?:/.test(t))return{src:t,open:t};
+    return{src:"photos/"+encodeURI(t),open:null}})}
+
+function md(s){let out="",list=false;
+  const inl=t=>t.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/(https?:\/\/[^\s<]+|youtu\.be\/[^\s<]+)/g,u=>'<a href="'+(u.startsWith("http")?u:"https://"+u)+'" target="_blank" rel="noopener">'+u+"</a>");
+  for(const raw of esc(s||"").split(/\r?\n/)){const t=raw.trim(),li=t.match(/^[-•]\s+(.*)/);
+    if(li){if(!list){out+="<ul>";list=true}out+="<li>"+inl(li[1])+"</li>";continue}
+    if(list){out+="</ul>";list=false}
+    if(t)out+="<p>"+inl(t)+"</p>"}
+  return out+(list?"</ul>":"")}
+
+function ph(p){const d=h("div","ph");
+  if(p&&p.open){const a=h("a",null,"Відкрити фото");a.href=p.open;a.target="_blank";a.rel="noopener";d.append(a)}
+  else d.textContent="Фото скоро буде";
+  return d}
+
+function mkImg(p,lazy){const im=new Image();im.alt="";im.decoding="async";if(lazy)im.loading="lazy";im.src=p.src;
+  im.onerror=()=>{if(p.alt&&im.src!==p.alt)im.src=p.alt;else im.replaceWith(ph(p))};
+  return im}
+
+function render(){
+  grid.replaceChildren();
+  items.map((it,i)=>({it,i})).sort((a,b)=>a.it.rank-b.it.rank||a.i-b.i).forEach(({it,i})=>{
+    const a=h("a","card"+(it.st&&it.st[0]=="sold"?" sold":""));a.href="#"+(i+1);
+    const pic=h("div","pic");pic.append(it.ph[0]?mkImg(it.ph[0],true):ph(null));
+    const info=h("div","info");info.append(h("span","nm",it.name));
+    if(it.price)info.append(h("span","pr",it.price));
+    if(it.st)info.append(h("span","st "+it.st[0],it.st[1]));
+    a.append(pic,info);grid.append(a)})}
+
+function show(i){
+  const it=items[i],n=it.ph.length;let g=0,x0=0;
+  const main=h("div","main"),th=h("div","th");
+  const set=k=>{g=n?(k+n)%n:0;main.querySelector("img,.ph")?.remove();
+    main.prepend(n?mkImg(it.ph[g],false):ph(null));
+    [...th.children].forEach((b,j)=>b.setAttribute("aria-current",j==g))};
+  cur={step:d=>n>1&&set(g+d)};
+  if(n>1){
+    it.ph.forEach((p,j)=>{const b=h("button");b.setAttribute("aria-label","Фото "+(j+1));b.append(mkImg(p,true));b.onclick=()=>set(j);th.append(b)});
+    [["prev","‹","Попереднє фото",-1],["next","›","Наступне фото",1]].forEach(([c,s,l,d])=>{
+      const b=h("button","nav "+c,s);b.setAttribute("aria-label",l);b.onclick=()=>set(g+d);main.append(b)});
+    main.addEventListener("touchstart",e=>{x0=e.touches[0].clientX},{passive:true});
+    main.addEventListener("touchend",e=>{const d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>40)set(g+(d<0?1:-1))})}
+  const b=h("div","body");b.append(h("h2",null,it.name));
+  if(it.price)b.append(h("div","dpr",it.price));
+  if(it.st)b.append(h("div","st "+it.st[0],it.st[1]));
+  const d=h("div","desc");d.innerHTML=md(it.description);b.append(d);
+  const acts=h("div","acts"),tg=h("a","btn","Написати в Telegram");tg.href=TG;tg.target="_blank";tg.rel="noopener";
+  const cl=h("button","btn ghost","Закрити");cl.onclick=()=>dlg.close();acts.append(tg,cl);b.append(acts);
+  const x=h("button","x","×");x.setAttribute("aria-label","Закрити");x.onclick=()=>dlg.close();
+  box.replaceChildren(main,th,b,x);
+  if(!dlg.open)dlg.showModal();
+  dlg.scrollTop=0;set(0)}
+
+function route(){const m=location.hash.match(/^#(\d+)$/),i=m?+m[1]-1:-1;
+  if(items[i])show(i);else if(dlg.open)dlg.close()}
+
+addEventListener("hashchange",route);
+dlg.addEventListener("close",()=>{if(/^#\d+$/.test(location.hash))history.replaceState(null,"",location.pathname+location.search)});
+dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
+dlg.addEventListener("keydown",e=>{if(cur&&e.key=="ArrowRight")cur.step(1);if(cur&&e.key=="ArrowLeft")cur.step(-1)});
+
+fetch(CSV).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.text()}).then(t=>{
+  if(/^\s*</.test(t))throw new Error("Google повернув не таблицю");
+  items=toItems(parse(t.replace(/^\uFEFF/,""))).map(o=>{
+    const st=status(o.status);
+    return{name:o.name.trim(),price:price(o.price),description:o.description||"",st,ph:photos(o.photo),rank:st?({sold:2,res:1}[st[0]]||0):0}});
+  if(items.length){state.hidden=true;render();route()}else state.textContent="Поки що тут порожньо. Загляньте пізніше."
+}).catch(e=>{console.error(e);state.textContent="Не вдалося завантажити список. Оновіть сторінку або напишіть у Telegram. ("+(e&&e.message||e)+")"});
+</script>
+</body>
+</html>
