@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#F3F5F2">
 <meta name="description" content="Туристичне спорядження: наявність і ціни">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Туристичне спорядження">
+<meta property="og:description" content="Наявність і ціни. Щоб домовитись, пишіть у Telegram.">
+<meta property="og:image" content="https://tourist-goods.pages.dev/cover.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <title>Туристичне спорядження</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 8 6 54h52z' fill='%231F6B4F'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +21,7 @@
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Onest,system-ui,sans-serif}
 .wrap{max-width:1100px;margin:0 auto;padding:28px 16px 56px}
-header{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:26px}
+header{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}
 h1{margin:0;font-size:clamp(28px,6vw,46px);line-height:1.08;letter-spacing:-.02em;font-weight:700}
 header p{margin:8px 0 0;color:var(--muted);max-width:46ch}
 .btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:12px 18px;border-radius:8px;border:1px solid var(--accent);cursor:pointer;font:inherit;font-weight:500}
@@ -25,6 +30,11 @@ header p{margin:8px 0 0;color:var(--muted);max-width:46ch}
 .ghost:hover{background:#EEF2EF}
 :focus-visible{outline:3px solid #2B8A66;outline-offset:2px}
 #state{color:var(--muted)}
+#chips{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow-x:auto;margin:0 -16px 14px;padding:10px 16px;background:var(--bg)}
+#chips:empty{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:999px;font:inherit;font-size:14px;cursor:pointer}
+.chip small{opacity:.65;font-size:12px}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr);gap:18px}}
 @media(min-width:1000px){.grid{grid-template-columns:repeat(4,1fr)}}
@@ -65,6 +75,13 @@ h2{margin:0 0 4px;font-size:22px;line-height:1.25;font-weight:700}
 .desc li{margin-bottom:.2em}
 .desc a{color:var(--accent)}
 .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.trust{display:inline-flex;flex-wrap:wrap;gap:2px 6px;align-items:center;margin:0 0 14px;padding:8px 14px;background:var(--surface);border:1px solid var(--line);border-radius:999px;color:var(--ink);font-size:14px;text-decoration:none}
+.trust:hover{border-color:#B9C6BD}
+.trust b{color:var(--accent)}
+.terms{margin:0 0 16px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:8px;font-size:14px;color:var(--muted);max-width:80ch}
+.terms b{color:var(--ink);font-weight:500}
+.dc{font-size:12px;font-weight:500;color:var(--accent)}
+.dpay{margin:2px 0 8px;font-size:15px;font-weight:500;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -76,8 +93,11 @@ h2{margin:0 0 4px;font-size:22px;line-height:1.25;font-weight:700}
     </div>
     <a class="btn" id="tg" target="_blank" rel="noopener">Написати в Telegram</a>
   </header>
+  <a class="trust" id="olx" target="_blank" rel="noopener"></a>
+  <p class="terms" id="terms"></p>
   <main>
     <p id="state">Завантажую товари…</p>
+    <nav id="chips" aria-label="Категорії"></nav>
     <div class="grid" id="grid"></div>
   </main>
 </div>
@@ -85,10 +105,16 @@ h2{margin:0 0 4px;font-size:22px;line-height:1.25;font-weight:700}
 <script>
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vRCUOcHg5CCXK4qgfMlbOqLUKNELy4f3t9hCJugYhsaXkAE5ffo3pSLZruMNQwURvcEBuBcA8nsv_n3/pub?gid=0&single=true&output=csv";
 const TG="https://t.me/GatsZa";
+/* Settings you can edit: OLX profile numbers and the delivery/payment text */
+const OLX={url:"https://www.olx.ua/uk/list/user/hHArM/",rating:"4,9",reviews:"50+",deliveries:"100+",since:"2018"};
+const TERMS=[["Доставка","Нова пошта, Укрпошта."],["Оплата","накладений платіж із передоплатою 400 грн. При повній передоплаті діє знижка, її розмір вказано біля товару."]];
 const $=s=>document.querySelector(s);
 const grid=$("#grid"),dlg=$("#dlg"),box=$("#box"),state=$("#state");
 $("#tg").href=TG;
-let items=[],cur=null;
+{const a=$("#olx");a.href=OLX.url;
+ a.innerHTML="<b>★ "+OLX.rating+"</b> на OLX · "+OLX.reviews+" відгуків · "+OLX.deliveries+" доставок · з "+OLX.since+" року";
+ $("#terms").innerHTML=TERMS.map(([l,t])=>"<b>"+l+":</b> "+t).join(" ")}
+let items=[],cur=null,cat=new URLSearchParams(location.search).get("c")||"";
 
 const h=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -115,6 +141,8 @@ function toItems(rows){
   }
   return t.filter(o=>(o.name||"").trim())}
 
+function priceNum(s){const m=(s||"").trim().match(/^(\d[\d\s]*)\s*(грн\.?|₴)?$/i);return m?+m[1].replace(/\s/g,""):null}
+const money=n=>n.toLocaleString("uk-UA")+" грн";
 function price(s){s=(s||"").trim();const m=s.match(/^(\d[\d\s]*)\s*(грн\.?|₴)?$/i);
   return m?(+m[1].replace(/\s/g,"")).toLocaleString("uk-UA")+" грн":s}
 
@@ -150,13 +178,24 @@ function mkImg(p,lazy){const im=new Image();im.alt="";im.decoding="async";if(laz
   im.onerror=()=>{if(p.alt&&im.src!==p.alt)im.src=p.alt;else im.replaceWith(ph(p))};
   return im}
 
+function drawChips(){
+  const nav=$("#chips"),cats=[...new Set(items.map(x=>x.cat))];
+  if(cats.length<2){nav.replaceChildren();cat="";return}
+  if(cat&&!cats.includes(cat))cat="";
+  nav.replaceChildren(...[["","Усі",items.length],...cats.map(c=>[c,c,items.filter(x=>x.cat===c).length])].map(([v,l,n])=>{
+    const b=h("button","chip",l);b.setAttribute("aria-pressed",String(v===cat));b.append(h("small",null," "+n));
+    b.onclick=()=>{cat=v;[...nav.children].forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+      history.replaceState(null,"",v?"?c="+encodeURIComponent(v):location.pathname);render()};
+    return b}))}
+
 function render(){
   grid.replaceChildren();
-  items.map((it,i)=>({it,i})).sort((a,b)=>a.it.rank-b.it.rank||a.i-b.i).forEach(({it,i})=>{
+  items.map((it,i)=>({it,i})).filter(({it})=>!cat||it.cat===cat).sort((a,b)=>a.it.rank-b.it.rank||a.i-b.i).forEach(({it,i})=>{
     const a=h("a","card"+(it.st&&it.st[0]=="sold"?" sold":""));a.href="#"+(i+1);
     const pic=h("div","pic");pic.append(it.ph[0]?mkImg(it.ph[0],true):ph(null));
     const info=h("div","info");info.append(h("span","nm",it.name));
     if(it.price)info.append(h("span","pr",it.price));
+    if(it.disc&&!(it.st&&it.st[0]=="sold"))info.append(h("span","dc","−"+money(it.disc)+" при повній передоплаті"));
     if(it.st)info.append(h("span","st "+it.st[0],it.st[1]));
     a.append(pic,info);grid.append(a)})}
 
@@ -175,6 +214,7 @@ function show(i){
     main.addEventListener("touchend",e=>{const d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>40)set(g+(d<0?1:-1))})}
   const b=h("div","body");b.append(h("h2",null,it.name));
   if(it.price)b.append(h("div","dpr",it.price));
+  if(it.disc&&!(it.st&&it.st[0]=="sold"))b.append(h("div","dpay",it.pn?money(it.pn-it.disc)+" при повній передоплаті (−"+money(it.disc)+")":"Знижка при повній передоплаті: −"+money(it.disc)));
   if(it.st)b.append(h("div","st "+it.st[0],it.st[1]));
   const d=h("div","desc");d.innerHTML=md(it.description);b.append(d);
   const acts=h("div","acts"),tg=h("a","btn","Написати в Telegram");tg.href=TG;tg.target="_blank";tg.rel="noopener";
@@ -192,12 +232,17 @@ dlg.addEventListener("close",()=>{if(/^#\d+$/.test(location.hash))history.replac
 dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close()});
 dlg.addEventListener("keydown",e=>{if(cur&&e.key=="ArrowRight")cur.step(1);if(cur&&e.key=="ArrowLeft")cur.step(-1)});
 
-fetch(CSV).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.text()}).then(t=>{
-  if(/^\s*</.test(t))throw new Error("Google повернув не таблицю");
+async function load(){let err;
+  for(const u of[CSV]){
+    try{const r=await fetch(u);if(!r.ok)throw new Error("HTTP "+r.status);const t=await r.text();
+      if(/^\s*</.test(t))throw new Error("відповідь не є таблицею");return t}
+    catch(e){err=e}}
+  throw err}
+load().then(t=>{
   items=toItems(parse(t.replace(/^\uFEFF/,""))).map(o=>{
     const st=status(o.status);
-    return{name:o.name.trim(),price:price(o.price),description:o.description||"",st,ph:photos(o.photo),rank:st?({sold:2,res:1}[st[0]]||0):0}});
-  if(items.length){state.hidden=true;render();route()}else state.textContent="Поки що тут порожньо. Загляньте пізніше."
+    return{name:o.name.trim(),cat:(o.category||o["категорія"]||"").trim()||"Інше",price:price(o.price),pn:priceNum(o.price),disc:parseInt(String(o.discount||o["знижка"]||"").replace(/\D/g,""),10)||0,description:o.description||"",st,ph:photos(o.photo),rank:st?({sold:2,res:1}[st[0]]||0):0}});
+  if(items.length){state.hidden=true;drawChips();render();route()}else state.textContent="Поки що тут порожньо. Загляньте пізніше."
 }).catch(e=>{console.error(e);state.textContent="Не вдалося завантажити список. Оновіть сторінку або напишіть у Telegram. ("+(e&&e.message||e)+")"});
 </script>
 </body>
